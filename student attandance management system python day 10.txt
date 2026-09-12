@@ -1,0 +1,194 @@
+import json
+import os
+from datetime import date
+
+FILE_NAME = "attendance.json"
+
+
+
+def load_data():
+    if os.path.exists(FILE_NAME):
+        with open(FILE_NAME, "r") as file:
+            return json.load(file)
+    return {}
+
+
+
+def save_data(data):
+    with open(FILE_NAME, "w") as file:
+        json.dump(data, file, indent=4)
+
+
+def add_student():
+    roll = input("Enter Roll Number: ").strip()
+
+    if roll in students:
+        print("Student already exists!")
+        return
+
+    name = input("Enter Student Name: ").strip()
+    department = input("Enter Department: ").strip()
+
+    students[roll] = {
+        "name": name,
+        "department": department,
+        "attendance": {}
+    }
+
+    save_data(students)
+    print("Student added successfully!")
+
+
+
+def mark_attendance():
+    if not students:
+        print("No students found.")
+        return
+
+    attendance_date = input(
+        "Enter date (YYYY-MM-DD) or press Enter for today: "
+    ).strip()
+
+    if attendance_date == "":
+        attendance_date = str(date.today())
+
+    print("\nMark Attendance")
+    print("P = Present")
+    print("A = Absent")
+
+    for roll, student in students.items():
+        while True:
+            status = input(
+                f"{roll} - {student['name']} (P/A): "
+            ).upper().strip()
+
+            if status in ["P", "A"]:
+                student["attendance"][attendance_date] = status
+                break
+            else:
+                print("Invalid input! Enter P or A.")
+
+    save_data(students)
+    print("Attendance marked successfully!")
+
+
+
+def view_attendance():
+    if not students:
+        print("No students found.")
+        return
+
+    print("\n========== ATTENDANCE RECORD ==========")
+
+    for roll, student in students.items():
+        print("\nRoll Number :", roll)
+        print("Name        :", student["name"])
+        print("Department  :", student["department"])
+
+        if not student["attendance"]:
+            print("Attendance  : No records")
+        else:
+            for attendance_date, status in sorted(
+                student["attendance"].items()
+            ):
+                result = "Present" if status == "P" else "Absent"
+                print(f"{attendance_date} : {result}")
+
+
+
+def search_student():
+    roll = input("Enter Roll Number to search: ").strip()
+
+    if roll not in students:
+        print("Student not found!")
+        return
+
+    student = students[roll]
+
+    print("\n========== STUDENT DETAILS ==========")
+    print("Roll Number :", roll)
+    print("Name        :", student["name"])
+    print("Department  :", student["department"])
+
+    total = len(student["attendance"])
+    present = list(student["attendance"].values()).count("P")
+    absent = list(student["attendance"].values()).count("A")
+
+    if total > 0:
+        percentage = (present / total) * 100
+    else:
+        percentage = 0
+
+    print("Total Classes:", total)
+    print("Present      :", present)
+    print("Absent       :", absent)
+    print(f"Attendance % : {percentage:.2f}%")
+
+
+
+def attendance_percentage():
+    if not students:
+        print("No students found.")
+        return
+
+    print("\n========== ATTENDANCE PERCENTAGE ==========")
+
+    for roll, student in students.items():
+        total = len(student["attendance"])
+        present = list(student["attendance"].values()).count("P")
+
+        if total > 0:
+            percentage = (present / total) * 100
+        else:
+            percentage = 0
+
+        print(
+            f"Roll: {roll} | "
+            f"Name: {student['name']} | "
+            f"Attendance: {percentage:.2f}%"
+        )
+
+
+
+students = load_data()
+
+while True:
+    print("\n")
+    print("============================================")
+    print("       STUDENT ATTENDANCE MANAGEMENT")
+    print("============================================")
+    print("1. Add Student")
+    print("2. Mark Attendance")
+    print("3. View Attendance")
+    print("4. Search Student")
+    print("5. Attendance Percentage")
+    print("6. Exit")
+    print("============================================")
+
+    try:
+        choice = int(input("Enter your choice: "))
+    except ValueError:
+        print("Please enter a valid number!")
+        continue
+
+    if choice == 1:
+        add_student()
+
+    elif choice == 2:
+        mark_attendance()
+
+    elif choice == 3:
+        view_attendance()
+
+    elif choice == 4:
+        search_student()
+
+    elif choice == 5:
+        attendance_percentage()
+
+    elif choice == 6:
+        print("Thank you for using Attendance Management System!")
+        break
+
+    else:
+        print("Invalid choice!")
