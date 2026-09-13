@@ -1,0 +1,100 @@
+import re
+from collections import Counter
+
+
+def clean_text(text):
+    text = text.lower()
+    words = re.findall(r"\b[a-zA-Z]+\b", text)
+    return words
+
+
+def analyze_frequency(words):
+    return Counter(words)
+
+
+def display_frequency(frequency):
+    print("\n===== WORD FREQUENCY =====")
+
+    for word, count in frequency.most_common():
+        print(f"{word:<20} : {count}")
+
+
+def search_word(frequency):
+    word = input("\nEnter word to search: ").lower().strip()
+
+    if word in frequency:
+        print(f"'{word}' appears {frequency[word]} time(s).")
+    else:
+        print(f"'{word}' was not found.")
+
+
+def show_statistics(words, frequency):
+    print("\n===== TEXT STATISTICS =====")
+    print("Total words        :", len(words))
+    print("Unique words       :", len(frequency))
+
+    if frequency:
+        word, count = frequency.most_common(1)[0]
+        print("Most frequent word :", word)
+        print("Frequency           :", count)
+
+
+def save_results(frequency):
+    with open("word_frequency.txt", "w", encoding="utf-8") as file:
+        file.write("===== WORD FREQUENCY ANALYSIS =====\n\n")
+
+        for word, count in frequency.most_common():
+            file.write(f"{word:<20} : {count}\n")
+
+    print("\nResults saved successfully in word_frequency.txt")
+
+
+def main():
+
+    print("====================================")
+    print("      WORD FREQUENCY ANALYSIS")
+    print("====================================")
+
+    text = input("\nEnter your text:\n")
+
+    words = clean_text(text)
+
+    if not words:
+        print("No words found.")
+        return
+
+    frequency = analyze_frequency(words)
+
+    while True:
+
+        print("\n================================")
+        print("1. Display Word Frequency")
+        print("2. Search a Word")
+        print("3. Show Statistics")
+        print("4. Save Results")
+        print("5. Exit")
+        print("================================")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            display_frequency(frequency)
+
+        elif choice == "2":
+            search_word(frequency)
+
+        elif choice == "3":
+            show_statistics(words, frequency)
+
+        elif choice == "4":
+            save_results(frequency)
+
+        elif choice == "5":
+            print("Program exited successfully.")
+            break
+
+        else:
+            print("Invalid choice.")
+
+
+main()
