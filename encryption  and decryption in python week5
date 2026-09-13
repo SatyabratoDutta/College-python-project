@@ -1,0 +1,47 @@
+def encrypt(text, key):
+    result = ""
+
+    for char in text:
+        if char.isalpha():
+            start = ord('A') if char.isupper() else ord('a')
+            result += chr((ord(char) - start + key) % 26 + start)
+        else:
+            result += char
+
+    return result
+
+
+def decrypt(text, key):
+    return encrypt(text, -key)
+
+
+while True:
+    print("\n===== ENCRYPTION & DECRYPTION =====")
+    print("1. Encryption")
+    print("2. Decryption")
+    print("3. Exit")
+
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        text = input("Enter text: ")
+        key = int(input("Enter key: "))
+
+        encrypted = encrypt(text, key)
+
+        print("Encrypted text:", encrypted)
+
+    elif choice == "2":
+        text = input("Enter encrypted text: ")
+        key = int(input("Enter key: "))
+
+        decrypted = decrypt(text, key)
+
+        print("Decrypted text:", decrypted)
+
+    elif choice == "3":
+        print("Program exited.")
+        break
+
+    else:
+        print("Invalid choice.")
