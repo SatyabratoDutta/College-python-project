@@ -1,0 +1,66 @@
+#Write a Python program to determine whether a given list contains any duplicate 
+#values. 
+#The program should check all the elements in the list and: 
+#● Display True if any value appears more than once. 
+#● Display False if all values are unique.
+
+
+
+numbers = [10, 20, 30, 20, 40, 50]
+
+if len(numbers) != len(set(numbers)):
+    print(True)
+else:
+    print(False)numbers = [10, 20, 30, 20, 40, 50]
+
+if len(numbers) != len(set(numbers)):
+    print(True)
+else:
+    print(False)
+
+
+
+#Write a Python program to find the first character in a given string that appears only 
+#once. 
+#The program should: 
+#● Count the frequency of each character in the string. 
+#● Check the characters from left to right. 
+#● Display the first character whose frequency is exactly 1. 
+#● If every character appears more than once, display -1.
+
+
+
+
+text = "leetcode"
+
+frequency = {}
+
+# Count frequency of each character
+for char in text:
+    frequency[char] = frequency.get(char, 0) + 1
+
+# Find first character appearing only once
+result = -1
+
+for char in text:
+    if frequency[char] == 1:
+        result = char
+        break
+
+print(result)
+
+
+
+
+#Write a Python program to find the symmetric difference between two given sets. 
+#The symmetric difference(^) contains all the elements that are present in either of the 
+#two sets, but not in both sets. 
+
+
+
+set1 = {10, 20, 30, 40, 50}
+set2 = {40, 50, 60, 70, 80}
+
+result = set1 ^ set2
+
+print(result)
