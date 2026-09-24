@@ -1,0 +1,151 @@
+# Hotel Booking System
+
+rooms = {
+    101: {"type": "Single", "price": 1500, "status": "Available"},
+    102: {"type": "Single", "price": 1500, "status": "Available"},
+    201: {"type": "Double", "price": 2500, "status": "Available"},
+    202: {"type": "Double", "price": 2500, "status": "Available"},
+    301: {"type": "Deluxe", "price": 4000, "status": "Available"}
+}
+
+bookings = {}
+
+
+def show_rooms():
+    print("\n--- Available Rooms ---")
+    for room_no, details in rooms.items():
+        if details["status"] == "Available":
+            print(
+                f"Room: {room_no} | "
+                f"Type: {details['type']} | "
+                f"Price: ₹{details['price']}/night"
+            )
+
+
+def book_room():
+    show_rooms()
+
+    try:
+        room_no = int(input("\nEnter room number: "))
+
+        if room_no not in rooms:
+            print("Invalid room number.")
+            return
+
+        if rooms[room_no]["status"] != "Available":
+            print("Room is already booked.")
+            return
+
+        name = input("Enter customer name: ")
+        phone = input("Enter phone number: ")
+        nights = int(input("Enter number of nights: "))
+
+        if nights <= 0:
+            print("Invalid number of nights.")
+            return
+
+        total = rooms[room_no]["price"] * nights
+
+        bookings[room_no] = {
+            "name": name,
+            "phone": phone,
+            "nights": nights,
+            "total": total
+        }
+
+        rooms[room_no]["status"] = "Booked"
+
+        print("\nBooking successful!")
+        print(f"Customer: {name}")
+        print(f"Room: {room_no}")
+        print(f"Total Bill: ₹{total}")
+
+    except ValueError:
+        print("Please enter valid numeric values.")
+
+
+def view_bookings():
+    print("\n--- Bookings ---")
+
+    if not bookings:
+        print("No bookings found.")
+        return
+
+    for room_no, booking in bookings.items():
+        print(f"\nRoom Number: {room_no}")
+        print(f"Customer: {booking['name']}")
+        print(f"Phone: {booking['phone']}")
+        print(f"Nights: {booking['nights']}")
+        print(f"Total Bill: ₹{booking['total']}")
+
+
+def cancel_booking():
+    try:
+        room_no = int(input("Enter room number to cancel: "))
+
+        if room_no not in bookings:
+            print("No booking found for this room.")
+            return
+
+        del bookings[room_no]
+        rooms[room_no]["status"] = "Available"
+
+        print("Booking cancelled successfully.")
+
+    except ValueError:
+        print("Invalid room number.")
+
+
+def search_booking():
+    try:
+        room_no = int(input("Enter room number: "))
+
+        if room_no in bookings:
+            booking = bookings[room_no]
+            print("\n--- Booking Details ---")
+            print("Room:", room_no)
+            print("Customer:", booking["name"])
+            print("Phone:", booking["phone"])
+            print("Nights:", booking["nights"])
+            print("Total Bill: ₹", booking["total"])
+        else:
+            print("No booking found.")
+
+    except ValueError:
+        print("Invalid room number.")
+
+
+while True:
+    print("\n==============================")
+    print("      HOTEL BOOKING SYSTEM")
+    print("==============================")
+    print("1. Show Available Rooms")
+    print("2. Book Room")
+    print("3. View All Bookings")
+    print("4. Search Booking")
+    print("5. Cancel Booking")
+    print("6. Exit")
+
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        show_rooms()
+
+    elif choice == "2":
+        book_room()
+
+    elif choice == "3":
+        view_bookings()
+
+    elif choice == "4":
+        search_booking()
+
+    elif choice == "5":
+        cancel_booking()
+
+    elif choice == "6":
+        print("Thank you for using Hotel Booking System!")
+        break
+
+    else:
+        print("Invalid choice. Please try again.")
