@@ -1,0 +1,97 @@
+Write a Python program to determine whether a given string of words follows a specified pattern. The program should check whether there is a one-to-one relationship between the characters in the pattern and the words in the string. ● Each character in the pattern must represent exactly one word. ● The same character must always represent the same word. ● Two different characters cannot represent the same word. ● Display True if the string follows the pattern; otherwise, display False. 
+
+
+def follows_pattern(pattern, text):
+    words = text.split()
+
+    if len(pattern) != len(words):
+        return False
+
+    char_to_word = {}
+    word_to_char = {}
+
+    for char, word in zip(pattern, words):
+        if char in char_to_word and char_to_word[char] != word:
+            return False
+        if word in word_to_char and word_to_char[word] != char:
+            return False
+
+        char_to_word[char] = word
+        word_to_char[word] = char
+
+    return True
+
+
+print(follows_pattern("abba", "dog cat cat dog"))
+print(follows_pattern("abba", "dog cat cat fish"))
+
+
+
+
+Write a Python program to determine whether two given strings are anagrams of each other. Two strings are called anagrams if they contain the same characters with the same frequency, but the characters may be arranged in a different order. The program should: ● Take two strings as input. ● Count the frequency of each character in both strings. ● Compare the character frequencies of the two strings. ● Display True if the two strings are anagrams. ● Display False if they are not anagrams. 
+
+
+
+def are_anagrams(text1, text2):
+    if len(text1) != len(text2):
+        return False
+
+    freq1 = {}
+    freq2 = {}
+
+    for char in text1:
+        freq1[char] = freq1.get(char, 0) + 1
+
+    for char in text2:
+        freq2[char] = freq2.get(char, 0) + 1
+
+    return freq1 == freq2
+
+
+print(are_anagrams("listen", "silent"))
+print(are_anagrams("hello", "world"))
+print(are_anagrams("anagram", "nagaram"))
+
+
+
+Write a Python program to find the elements that are common to two given collections. The program should: ● Take two collections of numbers as input. ● Compare the elements of both collections. ● Find the elements that appear in both collections. ● Display the common elements without repeating any value. 
+
+
+list1 = [10, 20, 30, 40, 50]
+list2 = [30, 40, 50, 60, 70]
+
+common = set(list1) & set(list2)
+
+print(common)
+
+
+list1 = [10, 20, 20, 30, 40]
+list2 = [20, 30, 30, 50]
+
+common = set(list1) & set(list2)
+
+print(common)
+
+
+
+Write a Python program to find the second-largest element in a given tuple of numbers. The program should: ● Take a tuple containing numeric values. ● Find the second-largest unique element in the tuple. ● Display the second-largest value. ● If the tuple does not contain at least two unique elements, display a suitable message such as "Second largest element does not exist." 
+
+def second_largest(numbers):
+    unique_numbers = set(numbers)
+
+    if len(unique_numbers) < 2:
+        print("The second largest element does not exist.")
+    else:
+        largest = max(unique_numbers)
+        unique_numbers.remove(largest)
+        print(max(unique_numbers))
+
+
+numbers = (10, 25, 40, 15, 30)
+second_largest(numbers)
+
+numbers = (5, 5, 5, 5)
+second_largest(numbers)
+
+numbers = (12, 45, 32, 45, 18)
+second_largest(numbers)
