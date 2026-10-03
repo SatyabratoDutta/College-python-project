@@ -1,0 +1,118 @@
+# ATM Transaction Simulator (Advanced Version)
+
+customers = {}
+
+while True:
+    print("\n====== ATM TRANSACTION SIMULATOR ======")
+    print("1. Add New Customer")
+    print("2. Login")
+    print("3. Exit")
+
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        name = input("Enter Customer Name: ")
+
+        if name in customers:
+            print("Customer already exists!")
+        else:
+            pin = input("Create 4-digit PIN: ")
+            balance = float(input("Enter Initial Balance: "))
+            customers[name] = {
+                "pin": pin,
+                "balance": balance,
+                "history": []
+            }
+            print("Customer Added Successfully!")
+
+    elif choice == "2":
+        name = input("Enter Customer Name: ")
+
+        if name not in customers:
+            print("Customer Not Found!")
+            continue
+
+        attempts = 3
+        while attempts > 0:
+            pin = input("Enter PIN: ")
+
+            if pin == customers[name]["pin"]:
+                print("\nLogin Successful!")
+
+                while True:
+                    print("\n------ ATM MENU ------")
+                    print("1. Check Balance")
+                    print("2. Deposit Money")
+                    print("3. Withdraw Money")
+                    print("4. Transaction History")
+                    print("5. Mini Statement")
+                    print("6. Logout")
+
+                    option = input("Enter your choice: ")
+
+                    if option == "1":
+                        print("Current Balance = ₹", customers[name]["balance"])
+
+                    elif option == "2":
+                        amount = float(input("Enter Deposit Amount: "))
+                        customers[name]["balance"] += amount
+                        customers[name]["history"].append(f"Deposited ₹{amount}")
+                        print("Deposit Successful!")
+
+                    elif option == "3":
+                        amount = float(input("Enter Withdraw Amount: "))
+
+                        if amount > 5000:
+                            print("Maximum withdrawal limit is ₹5000.")
+
+                        elif amount > customers[name]["balance"]:
+                            print("Insufficient Balance!")
+
+                        else:
+                            customers[name]["balance"] -= amount
+                            customers[name]["history"].append(f"Withdraw ₹{amount}")
+                            print("Please Collect Your Cash.")
+
+                    elif option == "4":
+                        print("\nTransaction History")
+                        if len(customers[name]["history"]) == 0:
+                            print("No Transactions Yet.")
+                        else:
+                            for i in customers[name]["history"]:
+                                print(i)
+
+                    elif option == "5":
+                        print("\n----- MINI STATEMENT -----")
+                        print("Customer :", name)
+                        print("Balance  : ₹", customers[name]["balance"])
+
+                        print("Recent Transactions:")
+                        if len(customers[name]["history"]) == 0:
+                            print("No Transactions")
+                        else:
+                            for i in customers[name]["history"][-5:]:
+                                print(i)
+
+                    elif option == "6":
+                        print("Logged Out Successfully.")
+                        break
+
+                    else:
+                        print("Invalid Choice!")
+
+                break
+
+            else:
+                attempts -= 1
+                print("Wrong PIN!")
+                print("Attempts Left:", attempts)
+
+        if attempts == 0:
+            print("Account Blocked! Too Many Wrong Attempts.")
+
+    elif choice == "3":
+        print("Thank You For Using ATM Simulator.")
+        break
+
+    else:
+        print("Invalid Choice!")
