@@ -1,0 +1,33 @@
+#electric bill calculator!
+bill = 0
+total_bill = 0
+discount = 0
+while True:
+  print("= = Electric Bill Calculator = =")
+  consumer_name=input("Enter consumer name:")
+  consumer_id=input("Enter consumer id:")
+  units_consumed=int(input("Enter total units consumed(You can enter 0 to exit!):"))
+  if(units_consumed==0):
+    break
+  if units_consumed<=100:
+      bill=1.5*units_consumed
+  elif 100<units_consumed<=200:
+      bill=2.5*(units_consumed-100)+(100*1.5)
+  elif 200<units_consumed<=300:
+    bill=(units_consumed-200)*4+(100*2.5)+(100*1.5)
+  else:
+      bill=(units_consumed-300)*6+(100*4)+(100*2.5)+(100*1.5)
+
+  if bill>1000:
+        discount=bill*0.05
+  total_bill=bill+50-discount
+  print(" bill")
+
+  print("consumer name is:",consumer_name)
+  print("consumer idis:",consumer_id)
+  print("Total bill of:",total_bill,"is divied as->")
+  print("Fixed bill charge:",50)
+  print("Bill for units consumed:",bill)
+  print("Discount:",discount)
+  print("So",total_bill,"=",bill,'+',50,'-',discount)
+  print("Totalpayable bill is:",total_bill)
