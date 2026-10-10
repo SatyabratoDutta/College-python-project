@@ -1,0 +1,429 @@
+import json
+import os
+
+
+class StudentManagementSystem:
+
+    def __init__(self):
+        self.filename = "students.txt"
+
+        # Dictionary to store student records
+        self.students = {}
+
+        # Tuple of available courses
+        self.courses = ("CSE", "BCA", "BBA", "BTECH")
+
+        # List to store student names
+        self.student_names = []
+
+        # Set to store unique courses
+        self.unique_courses = set()
+
+        self.load_data()
+
+    # Load student records from file
+    def load_data(self):
+        if not os.path.exists(self.filename):
+            return
+
+        try:
+            with open(self.filename, "r") as file:
+                self.students = json.load(file)
+
+            for student_id, details in self.students.items():
+                self.student_names.append(details["name"])
+                self.unique_courses.add(details["course"])
+
+        except (json.JSONDecodeError, OSError):
+            print("Error reading student records.")
+
+    # Save student records to file
+    def save_data(self):
+        try:
+            with open(self.filename, "w") as file:
+                json.dump(self.students, file, indent=4)
+        except OSError:
+            print("Error saving student records.")
+
+    # Calculate SGPA from marks
+    def calculate_sgpa(self, marks):
+        if marks >= 90:
+            return 10.0
+        elif marks >= 80:
+            return 9.0
+        elif marks >= 70:
+            return 8.0
+        elif marks >= 60:
+            return 7.0
+        elif marks >= 50:
+            return 6.0
+        elif marks >= 40:
+            return 5.0
+        else:
+            return 0.0
+
+    # Add student
+    def add_student(self):
+        student_id = input("Enter Student ID: ")
+
+        if student_id in self.students:
+            print("Student ID already exists!")
+            return
+
+        name = input("Enter Student Name: ").strip()
+
+        if not name:
+            print("Name cannot be empty!")
+            return
+
+        try:
+            age = int(input("Enter Student Age: "))
+            if age <= 0:
+                print("Age must be positive!")
+                return
+        except ValueError:
+            print("Enter a valid age!")
+            return
+
+        print("Available Courses:", self.courses)
+        course = input("Enter Course: ").upper()
+
+        if course not in self.courses:
+            print("Invalid course!")
+            return
+
+        # Enter marks for multiple subjects
+        try:
+            number_of_subjects = int(
+                input("Enter Number of Subjects: ")
+            )
+
+            if number_of_subjects <= 0:
+                print("Number of subjects must be positive!")
+                return
+
+        except ValueError:
+            print("Enter a valid number of subjects!")
+            return
+
+        subjects = {}
+
+        for i in range(number_of_subjects):
+            subject_name = input(
+                f"Enter Subject {i + 1} Name: "
+            ).strip()
+
+            if not subject_name:
+                print("Subject name cannot be empty!")
+                return
+
+            if subject_name in subjects:
+                print("Duplicate subject name!")
+                return
+
+            try:
+                marks = float(
+                    input(f"Enter marks for {subject_name} (0-100): ")
+                )
+
+                if not 0 <= marks <= 100:
+                    print("Marks must be between 0 and 100!")
+                    return
+
+            except ValueError:
+                print("Enter valid marks!")
+                return
+
+            subjects[subject_name] = marks
+
+        # Calculate average marks and illustrative SGPA
+        average_marks = sum(subjects.values()) / len(subjects)
+        sgpa = self.calculate_sgpa(average_marks)
+
+        self.students[student_id] = {
+            "name": name,
+            "age": age,
+            "course": course,
+            "subjects": subjects,
+            "average_marks": round(average_marks, 2),
+            "sgpa": sgpa
+        }
+
+        self.student_names.append(name)
+        self.unique_courses.add(course)
+
+        self.save_data()
+
+        print("\nStudent added successfully!")
+        print("Average Marks:", round(average_marks, 2))
+        print("Calculated SGPA:", sgpa)
+
+    # View all students
+    def view_students(self):
+        if not self.students:
+            print("No student records found!")
+            return
+
+        for student_id, details in self.students.items():
+            print("\n========== STUDENT DETAILS ==========")
+            print("Student ID:", student_id)
+            print("Name:", details["name"])
+            print("Age:", details["age"])
+            print("Course:", details["course"])
+
+            print("\nSubject Marks:")
+
+            for subject, marks in details["subjects"].items():
+                print(subject, ":", marks)
+
+            print("Average Marks:", details["average_marks"])
+            print("SGPA:", details["sgpa"])
+
+    # Search student
+    def search_student(self):
+        student_id = input("Enter Student ID: ")
+
+        if student_id not in self.students:
+            print("Student not found!")
+            return
+
+        details = self.students[student_id]
+
+        print("\nStudent ID:", student_id)
+        print("Name:", details["name"])
+        print("Age:", details["age"])
+        print("Course:", details["course"])
+
+        for subject, marks in details["subjects"].items():
+            print(subject, ":", marks)
+
+        print("Average Marks:", details["average_marks"])
+        print("SGPA:", details["sgpa"])
+
+    # Update student marks
+    def update_marks(self):
+        student_id = input("Enter Student ID: ")
+
+        if student_id not in self.students:
+            print("Student not found!")
+            return
+
+        details = self.students[student_id]
+
+        print("\nSubjects:")
+
+        for subject in details["subjects"]:
+            print(subject)
+
+        subject_name = input(
+            "Enter subject name to update: "
+        ).strip()
+
+        if subject_name not in details["subjects"]:
+            print("Subject not found!")
+            return
+
+        try:
+            marks = float(input("Enter New Marks (0-100): "))
+
+            if not 0 <= marks <= 100:
+                print("Marks must be between 0 and 100!")
+                return
+
+        except ValueError:
+            print("Enter valid marks!")
+            return
+
+        details["subjects"][subject_name] = marks
+
+        average_marks = (
+            sum(details["subjects"].values())
+            / len(details["subjects"])
+        )
+
+        details["average_marks"] = round(average_marks, 2)
+        details["sgpa"] = self.calculate_sgpa(average_marks)
+
+        self.save_data()
+
+        print("Marks updated successfully!")
+        print("Average Marks:", details["average_marks"])
+        print("Calculated SGPA:", details["sgpa"])
+
+    # Update student details
+    def update_student(self):
+        student_id = input("Enter Student ID: ")
+
+        if student_id not in self.students:
+            print("Student not found!")
+            return
+
+        details = self.students[student_id]
+
+        print("1. Update Name")
+        print("2. Update Age")
+        print("3. Update Course")
+        print("4. Update Subject Marks")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            name = input("Enter New Name: ").strip()
+
+            if not name:
+                print("Name cannot be empty!")
+                return
+
+            details["name"] = name
+
+        elif choice == "2":
+            try:
+                age = int(input("Enter New Age: "))
+
+                if age <= 0:
+                    print("Age must be positive!")
+                    return
+
+                details["age"] = age
+
+            except ValueError:
+                print("Enter a valid age!")
+                return
+
+        elif choice == "3":
+            print("Available Courses:", self.courses)
+            course = input("Enter New Course: ").upper()
+
+            if course not in self.courses:
+                print("Invalid course!")
+                return
+
+            details["course"] = course
+
+        elif choice == "4":
+            self.update_marks()
+            return
+
+        else:
+            print("Invalid choice!")
+            return
+
+        self.student_names = [
+            student["name"]
+            for student in self.students.values()
+        ]
+
+        self.unique_courses = {
+            student["course"]
+            for student in self.students.values()
+        }
+
+        self.save_data()
+        print("Student details updated successfully!")
+
+    # Delete student
+    def delete_student(self):
+        student_id = input("Enter Student ID: ")
+
+        if student_id in self.students:
+            del self.students[student_id]
+
+            self.student_names = [
+                student["name"]
+                for student in self.students.values()
+            ]
+
+            self.unique_courses = {
+                student["course"]
+                for student in self.students.values()
+            }
+
+            self.save_data()
+            print("Student deleted successfully!")
+
+        else:
+            print("Student not found!")
+
+    # Display student names
+    def show_names(self):
+        if not self.student_names:
+            print("No student names available!")
+            return
+
+        print("\nStudent Names:")
+
+        for name in self.student_names:
+            print(name)
+
+    # Display courses
+    def show_courses(self):
+        print("Available Courses:", self.courses)
+        print("Courses with Enrolled Students:", self.unique_courses)
+
+    # Display SGPA results
+    def show_sgpa_results(self):
+        if not self.students:
+            print("No student records found!")
+            return
+
+        print("\n========== SGPA RESULTS ==========")
+
+        for student_id, details in self.students.items():
+            print(
+                "ID:", student_id,
+                "| Name:", details["name"],
+                "| Average Marks:", details["average_marks"],
+                "| SGPA:", details["sgpa"]
+            )
+
+    # Main menu
+    def run(self):
+        while True:
+            print("\n====== STUDENT MANAGEMENT SYSTEM ======")
+            print("1. Add Student")
+            print("2. View All Students")
+            print("3. Search Student")
+            print("4. Update Student Details")
+            print("5. Delete Student")
+            print("6. Show Student Names")
+            print("7. Show Courses")
+            print("8. Show SGPA Results")
+            print("9. Exit")
+
+            choice = input("Enter Your Choice: ")
+
+            if choice == "1":
+                self.add_student()
+
+            elif choice == "2":
+                self.view_students()
+
+            elif choice == "3":
+                self.search_student()
+
+            elif choice == "4":
+                self.update_student()
+
+            elif choice == "5":
+                self.delete_student()
+
+            elif choice == "6":
+                self.show_names()
+
+            elif choice == "7":
+                self.show_courses()
+
+            elif choice == "8":
+                self.show_sgpa_results()
+
+            elif choice == "9":
+                print("Thank you for using Student Management System!")
+                break
+
+            else:
+                print("Invalid choice! Please try again.")
+
+
+# Create object and run the system
+sms = StudentManagementSystem()
+sms.run()
