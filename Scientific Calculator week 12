@@ -1,0 +1,134 @@
+import math
+
+def scientific_calculator():
+    while True:
+        print("\n========== SCIENTIFIC CALCULATOR ==========")
+        print("1. Addition (+)")
+        print("2. Subtraction (-)")
+        print("3. Multiplication (*)")
+        print("4. Division (/)")
+        print("5. Power (x^y)")
+        print("6. Square Root (√x)")
+        print("7. Cube Root (∛x)")
+        print("8. Factorial (x!)")
+        print("9. Logarithm base 10 (log10)")
+        print("10. Natural Logarithm (ln)")
+        print("11. Sine (sin)")
+        print("12. Cosine (cos)")
+        print("13. Tangent (tan)")
+        print("14. Exponential (e^x)")
+        print("15. Absolute Value")
+        print("16. Modulus (%)")
+        print("17. Percentage (%)")
+        print("18. Exit")
+
+        choice = input("Enter your choice (1-18): ")
+
+        try:
+            if choice == '18':
+                print("Thank you for using the calculator!")
+                break
+
+            elif choice in ['1', '2', '3', '4', '5', '16', '17']:
+                a = float(input("Enter first number: "))
+                b = float(input("Enter second number: "))
+
+                if choice == '1':
+                    print("Result:", a + b)
+
+                elif choice == '2':
+                    print("Result:", a - b)
+
+                elif choice == '3':
+                    print("Result:", a * b)
+
+                elif choice == '4':
+                    if b != 0:
+                        print("Result:", a / b)
+                    else:
+                        print("Error: Division by zero!")
+
+                elif choice == '5':
+                    print("Result:", a ** b)
+
+                elif choice == '16':
+                    if b != 0:
+                        print("Result:", a % b)
+                    else:
+                        print("Error: Modulus by zero!")
+
+                elif choice == '17':
+                    print("Result:", (a * b) / 100, "%")
+
+            elif choice == '6':
+                x = float(input("Enter a number: "))
+                if x >= 0:
+                    print("Square Root:", math.sqrt(x))
+                else:
+                    print("Error: Negative number!")
+
+            elif choice == '7':
+                x = float(input("Enter a number: "))
+                print("Cube Root:", math.copysign(abs(x) ** (1 / 3), x))
+
+            elif choice == '8':
+                x = int(input("Enter a non-negative integer: "))
+                if x >= 0:
+                    print("Factorial:", math.factorial(x))
+                else:
+                    print("Error: Factorial requires a non-negative integer!")
+
+            elif choice == '9':
+                x = float(input("Enter a positive number: "))
+                if x > 0:
+                    print("Logarithm:", math.log10(x))
+                else:
+                    print("Error: Number must be positive!")
+
+            elif choice == '10':
+                x = float(input("Enter a positive number: "))
+                if x > 0:
+                    print("Natural Logarithm:", math.log(x))
+                else:
+                    print("Error: Number must be positive!")
+
+            elif choice in ['11', '12', '13']:
+                angle = float(input("Enter angle in degrees: "))
+                radians = math.radians(angle)
+
+                if choice == '11':
+                    print("Sine:", math.sin(radians))
+
+                elif choice == '12':
+                    print("Cosine:", math.cos(radians))
+
+                elif choice == '13':
+                    if math.isclose(math.cos(radians), 0, abs_tol=1e-12):
+                        print("Error: Tangent is undefined!")
+                    else:
+                        print("Tangent:", math.tan(radians))
+
+            elif choice == '14':
+                x = float(input("Enter a number: "))
+                try:
+                    print("Exponential:", math.exp(x))
+                except OverflowError:
+                    print("Error: Result is too large!")
+
+            elif choice == '15':
+                x = float(input("Enter a number: "))
+                print("Absolute Value:", abs(x))
+
+            else:
+                print("Invalid choice! Please select 1-18.")
+
+        except ValueError:
+            print("Error: Please enter a valid number!")
+
+        except OverflowError:
+            print("Error: Result is too large!")
+
+        input("\nPress Enter to continue...")
+
+
+scientific_calculator()
