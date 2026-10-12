@@ -1,0 +1,269 @@
+
+import json
+
+
+class StudentResultSystem:
+    def __init__(self):
+        self.students = {}
+        self.subjects = ("C", "Python", "Mathematics", "Physics", "English")
+        self.load_data()
+
+    # Load student data from file
+    def load_data(self):
+        try:
+            with open("student_results.json", "r") as file:
+                self.students = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.students = {}
+
+    # Save student data to file
+    def save_data(self):
+        with open("student_results.json", "w") as file:
+            json.dump(self.students, file, indent=4)
+
+    # Add a new student
+    def add_student(self):
+        roll = input("Enter Roll Number: ")
+
+        if roll in self.students:
+            print("Student already exists!")
+            return
+
+        name = input("Enter Student Name: ")
+        marks = {}
+
+        for subject in self.subjects:
+            while True:
+                try:
+                    mark = float(input(f"Enter marks in {subject} (0-100): "))
+
+                    if 0 <= mark <= 100:
+                        marks[subject] = mark
+                        break
+                    else:
+                        print("Marks must be between 0 and 100.")
+
+                except ValueError:
+                    print("Please enter a valid number.")
+
+        total = sum(marks.values())
+        percentage = total / len(self.subjects)
+
+        # Pass requires at least 40 in every subject
+        result = (
+            "PASS"
+            if all(mark >= 40 for mark in marks.values())
+            else "FAIL"
+        )
+
+        self.students[roll] = {
+            "name": name,
+            "marks": marks,
+            "total": total,
+            "percentage": percentage,
+            "result": result
+        }
+
+        self.save_data()
+        print("Student added successfully!")
+
+    # Display all students
+    def display_students(self):
+        if not self.students:
+            print("No student records found.")
+            return
+
+        print("\n" + "=" * 75)
+        print(f"{'Roll':<12}{'Name':<20}{'Total':<10}"
+              f"{'Percentage':<15}{'Result':<10}")
+        print("=" * 75)
+
+        for roll, data in self.students.items():
+            print(
+                f"{roll:<12}{data['name']:<20}"
+                f"{data['total']:<10.1f}"
+                f"{data['percentage']:<15.2f}"
+                f"{data['result']:<10}"
+            )
+
+        print("=" * 75)
+
+    # Display an individual marksheet
+    def show_result(self):
+        roll = input("Enter Roll Number: ")
+
+        if roll not in self.students:
+            print("Student not found!")
+            return
+
+        student = self.students[roll]
+
+        print("\n========== STUDENT MARKSHEET ==========")
+        print("Roll Number :", roll)
+        print("Name        :", student["name"])
+        print("-" * 40)
+
+        for subject, mark in student["marks"].items():
+            print(f"{subject:<20}: {mark:.1f}")
+
+        print("-" * 40)
+        print(f"Total Marks : {student['total']:.1f}/500")
+        print(f"Percentage  : {student['percentage']:.2f}%")
+        print(f"Result      : {student['result']}")
+        print("=======================================")
+
+    # Search student
+    def search_student(self):
+        roll = input("Enter Roll Number to Search: ")
+
+        if roll in self.students:
+            student = self.students[roll]
+            print("\nStudent Found!")
+            print("Roll Number:", roll)
+            print("Name:", student["name"])
+            print("Percentage:", f"{student['percentage']:.2f}%")
+            print("Result:", student["result"])
+        else:
+            print("Student not found!")
+
+    # Update student marks
+    def update_marks(self):
+        roll = input("Enter Roll Number: ")
+
+        if roll not in self.students:
+            print("Student not found!")
+            return
+
+        marks = self.students[roll]["marks"]
+
+        print("Subjects:", ", ".join(self.subjects))
+        subject = input("Enter Subject to Update: ").strip()
+
+        if subject not in self.subjects:
+            print("Invalid subject!")
+            return
+
+        while True:
+            try:
+                mark = float(input("Enter New Marks (0-100): "))
+
+                if 0 <= mark <= 100:
+                    marks[subject] = mark
+                    break
+
+                print("Marks must be between 0 and 100.")
+
+            except ValueError:
+                print("Please enter a valid number.")
+
+        total = sum(marks.values())
+        percentage = total / len(self.subjects)
+
+        result = (
+            "PASS"
+            if all(m >= 40 for m in marks.values())
+            else "FAIL"
+        )
+
+        self.students[roll]["total"] = total
+        self.students[roll]["percentage"] = percentage
+        self.students[roll]["result"] = result
+
+        self.save_data()
+        print("Marks updated successfully!")
+
+    # Delete student
+    def delete_student(self):
+        roll = input("Enter Roll Number to Delete: ")
+
+        if roll in self.students:
+            del self.students[roll]
+            self.save_data()
+            print("Student deleted successfully!")
+        else:
+            print("Student not found!")
+
+    # Display class statistics
+    def class_statistics(self):
+        if not self.students:
+            print("No student records available.")
+            return
+
+        percentages = [
+            data["percentage"]
+            for data in self.students.values()
+        ]
+
+        passed_students = sum(
+            1 for data in self.students.values()
+            if data["result"] == "PASS"
+        )
+
+        failed_students = len(self.students) - passed_students
+
+        # Set stores unique result categories
+        results = {
+            data["result"]
+            for data in self.students.values()
+        }
+
+        topper_roll = max(
+            self.students,
+            key=lambda roll: self.students[roll]["percentage"]
+        )
+
+        topper = self.students[topper_roll]
+
+        print("\n========== CLASS STATISTICS ==========")
+        print("Total Students :", len(self.students))
+        print("Passed         :", passed_students)
+        print("Failed         :", failed_students)
+        print("Average %      :", f"{sum(percentages) / len(percentages):.2f}%")
+        print("Highest %      :", f"{max(percentages):.2f}%")
+        print("Lowest %       :", f"{min(percentages):.2f}%")
+        print("Class Topper   :", topper["name"])
+        print("Topper Roll No :", topper_roll)
+        print("Result Types   :", results)
+        print("======================================")
+
+    # Main menu
+    def run(self):
+        while True:
+            print("\n===== STUDENT RESULT MANAGEMENT SYSTEM =====")
+            print("1. Add Student")
+            print("2. Display All Students")
+            print("3. Show Student Marksheet")
+            print("4. Search Student")
+            print("5. Update Student Marks")
+            print("6. Delete Student")
+            print("7. Class Statistics")
+            print("8. Exit")
+
+            choice = input("Enter Your Choice: ").strip()
+
+            if choice == "1":
+                self.add_student()
+            elif choice == "2":
+                self.display_students()
+            elif choice == "3":
+                self.show_result()
+            elif choice == "4":
+                self.search_student()
+            elif choice == "5":
+                self.update_marks()
+            elif choice == "6":
+                self.delete_student()
+            elif choice == "7":
+                self.class_statistics()
+            elif choice == "8":
+                print("Thank you for using Student Result Management System!")
+                break
+            else:
+                print("Invalid choice! Please try again.")
+
+
+# Run the program
+if __name__ == "__main__":
+    system = StudentResultSystem()
+    system.run()
+
