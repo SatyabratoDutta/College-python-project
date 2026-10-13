@@ -1,0 +1,130 @@
+
+class Employee:
+    def __init__(self, emp_id, name, basic_salary):
+        self.emp_id = emp_id
+        self.name = name
+        self.basic_salary = basic_salary
+
+    def calculate_salary(self):
+        hra = self.basic_salary * 0.20       # 20% HRA
+        da = self.basic_salary * 0.10        # 10% DA
+        pf = self.basic_salary * 0.12        # 12% PF
+        tax = self.basic_salary * 0.05       # 5% tax
+
+        gross_salary = self.basic_salary + hra + da
+        total_deductions = pf + tax
+        net_salary = gross_salary - total_deductions
+
+        return {
+            "Basic Salary": self.basic_salary,
+            "HRA": hra,
+            "DA": da,
+            "PF": pf,
+            "Tax": tax,
+            "Gross Salary": gross_salary,
+            "Total Deductions": total_deductions,
+            "Net Salary": net_salary
+        }
+
+    def display_payslip(self):
+        salary = self.calculate_salary()
+
+        print("\n========== EMPLOYEE PAYSLIP ==========")
+        print("Employee ID:", self.emp_id)
+        print("Employee Name:", self.name)
+        print("--------------------------------------")
+
+        for item, amount in salary.items():
+            print(f"{item:<20}: Rs. {amount:,.2f}")
+
+        print("======================================")
+
+def main():
+    employees = {}
+
+    while True:
+        print("\n===== PAYROLL MANAGEMENT SYSTEM =====")
+        print("1. Add Employee")
+        print("2. View All Employees")
+        print("3. Generate Payslip")
+        print("4. Save Payroll to File")
+        print("5. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            emp_id = input("Enter employee ID: ")
+
+            if emp_id in employees:
+                print("Employee ID already exists!")
+                continue
+
+            name = input("Enter employee name: ")
+
+            try:
+                basic_salary = float(input("Enter basic salary: "))
+
+                if basic_salary <= 0:
+                    print("Salary must be greater than zero.")
+                    continue
+
+                employees[emp_id] = Employee(
+                    emp_id, name, basic_salary
+                )
+                print("Employee added successfully!")
+
+            except ValueError:
+                print("Please enter a valid salary.")
+
+        elif choice == "2":
+            if not employees:
+                print("No employee records found.")
+            else:
+                print("\nEmployee List:")
+                for emp in employees.values():
+                    print(
+                        f"ID: {emp.emp_id} | "
+                        f"Name: {emp.name} | "
+                        f"Basic Salary: Rs. {emp.basic_salary:.2f}"
+                    )
+
+        elif choice == "3":
+            emp_id = input("Enter employee ID: ")
+
+            if emp_id in employees:
+                employees[emp_id].display_payslip()
+            else:
+                print("Employee not found!")
+
+        elif choice == "4":
+            try:
+                with open("payroll.txt", "w") as file:
+                    for emp in employees.values():
+                        salary = emp.calculate_salary()
+
+                        file.write(
+                            f"\nEmployee ID: {emp.emp_id}\n"
+                            f"Employee Name: {emp.name}\n"
+                        )
+
+                        for item, amount in salary.items():
+                            file.write(
+                                f"{item}: Rs. {amount:.2f}\n"
+                            )
+
+                        file.write("-" * 35 + "\n")
+
+                print("Payroll saved to payroll.txt successfully!")
+
+            except OSError as error:
+                print("File error:", error)
+
+        elif choice == "5":
+            print("Exiting Payroll Management System.")
+            break
+
+        else:
+            print("Invalid choice! Please try again.")
+
+if __name__ == "__main__":
+    main()
